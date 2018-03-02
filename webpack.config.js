@@ -1,11 +1,17 @@
 const webpack = require('webpack');
 const path = require('path');
 const ClearPlugin = require('clean-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+const inProduction = process.env.NODE_ENV == 'production';
 
 module.exports = {
 
     entry: {
-        app: './src/app.js'
+        app: [
+            './src/app.js',
+            './src/app.scss',
+        ],
     },
 
     output: {
@@ -29,6 +35,15 @@ module.exports = {
                 exclude: /node_modules/,
             },
 
+            {
+                test: /\.scss$/,
+                use: ExtractTextPlugin.extract({
+                    use: ['css-loader', 'postcss-loader', 'sass-loader'],
+                    fallback: 'style-loader'
+                }),
+                exclude: /node_modules/,
+            },
+
         ]
 
     },
@@ -39,8 +54,9 @@ module.exports = {
             verbose: true,
             dry: false,
         }),
+        new ExtractTextPlugin('app.css'),
         new webpack.LoaderOptionsPlugin({
-            minimize: true
+            minimize: inProduction
         }),
     ],
 
