@@ -3,6 +3,7 @@
   "description": "Calculate DC Motor specifications",
   "scripts": {
     "prod": "webpack --mode='production' --config webpack.config.js",
+    "publish": "bin/publish",
     "dev": "webpack --mode='development' --config webpack.config.js",
     "watch": "webpack --mode='development' --config webpack.config.js --watch"
   },
