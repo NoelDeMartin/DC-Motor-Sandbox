@@ -1,33 +1,95 @@
 <template>
+
     <div class="container mx-auto p-8">
+
         <h1 class="text-center text-2xl">DC Motor Sandbox</h1>
 
         <div class="flex justify-center flex-col">
-            <AppInput
+            <MotorParameter
                 v-model="voltage"
-                name="Voltage (V)"
+                :locked="locked === 'voltage'"
+                :min="1"
+                :max="100"
+                name="Voltage"
+                units="V"
+                @lock="locked = 'voltage'"
+                @unlock="locked = 'current'"
             />
-            <AppInput
-                v-model="intensity"
-                name="Intensity (I)"
+            <MotorParameter
+                v-model="current"
+                :locked="locked === 'current'"
+                :min="1"
+                :max="1000"
+                name="Current"
+                units="mA"
+                @lock="locked = 'current'"
+                @unlock="locked = 'resistance'"
+            />
+            <MotorParameter
+                v-model="resistance"
+                :locked="locked === 'resistance'"
+                :min="1"
+                :max="1000"
+                name="Resistance"
+                units="Ω"
+                @lock="locked = 'resistance'"
+                @unlock="locked = 'voltage'"
             />
         </div>
+
     </div>
+
 </template>
 
 <script>
-import AppInput from './AppInput.vue';
+import MotorParameter from './MotorParameter.vue';
 
 export default {
     components: {
-        AppInput,
+        MotorParameter,
     },
 
     data() {
         return {
-            voltage: 0,
-            intensity: 0,
+            locked: 'voltage',
+            voltage: 6,
+            current: 220,
+            resistance: 27.27,
         };
+    },
+
+    watch: {
+        voltage() { this.ohmsLaw('voltage'); },
+        current() { this.ohmsLaw('current'); },
+        resistance() { this.ohmsLaw('resistance'); },
+    },
+
+    methods: {
+        ohmsLaw(propertyUpdated) {
+            let propertyAffected;
+            switch (propertyUpdated) {
+                case 'voltage':
+                    propertyAffected = this.locked === 'resistance' ? 'current' : 'resistance';
+                    break;
+                case 'current':
+                    propertyAffected = this.locked === 'voltage' ? 'resistance' : 'voltage';
+                    break;
+                case 'resistance':
+                    propertyAffected = this.locked === 'current' ? 'voltage' : 'current';
+                    break;
+            }
+            switch (propertyAffected) {
+                case 'voltage':
+                    this.voltage = (this.current / 1000) * this.resistance;
+                    break;
+                case 'current':
+                    this.current = (this.voltage / this.resistance) * 1000;
+                    break;
+                case 'resistance':
+                    this.resistance = this.voltage / (this.current / 1000);
+                    break;
+            }
+        },
     },
 };
 </script>
