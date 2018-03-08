@@ -3,7 +3,7 @@ const path = require('path');
 const ClearPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-const inProduction = process.env.NODE_ENV == 'production';
+const inProduction = process.env.NODE_ENV === 'production';
 
 module.exports = {
 
@@ -16,7 +16,7 @@ module.exports = {
 
     output: {
         path: path.resolve(__dirname, 'build'),
-        filename: 'app.js'
+        filename: 'app.js',
     },
 
     module: {
@@ -25,13 +25,13 @@ module.exports = {
 
             {
                 test: /\.js$/,
-                loader: 'babel-loader',
+                use: ['babel-loader', 'eslint-loader'],
                 exclude: /node_modules/,
             },
 
             {
                 test: /\.vue$/,
-                loader: 'vue-loader',
+                use: ['vue-loader', 'eslint-loader'],
                 exclude: /node_modules/,
             },
 
@@ -39,12 +39,12 @@ module.exports = {
                 test: /\.scss$/,
                 use: ExtractTextPlugin.extract({
                     use: ['css-loader', 'postcss-loader', 'sass-loader'],
-                    fallback: 'style-loader'
+                    fallback: 'style-loader',
                 }),
                 exclude: /node_modules/,
             },
 
-        ]
+        ],
 
     },
 
@@ -55,13 +55,11 @@ module.exports = {
             dry: false,
         }),
         new ExtractTextPlugin('app.css'),
-        new webpack.LoaderOptionsPlugin({
-            minimize: inProduction
-        }),
+        new webpack.LoaderOptionsPlugin({minimize: inProduction}),
     ],
 
     resolve: {
         extensions: ['*', '.js'],
-    }
+    },
 
 };
