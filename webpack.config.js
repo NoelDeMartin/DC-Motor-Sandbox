@@ -31,7 +31,13 @@ module.exports = {
 
             {
                 test: /\.vue$/,
-                use: ['vue-loader', 'eslint-loader'],
+                use: [
+                    {
+                        loader: 'vue-loader',
+                        options: { extractCSS: true },
+                    },
+                    'eslint-loader',
+                ],
                 exclude: /node_modules/,
             },
 

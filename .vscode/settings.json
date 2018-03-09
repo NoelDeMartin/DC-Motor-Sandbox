@@ -1,0 +1,21 @@
+// Place your settings in this file to overwrite the default settings
+{
+    "emmet.syntaxProfiles": {
+        "vue-html": "html",
+        "vue": "html"
+    },
+    "eslint.validate": [
+        "javascript",
+        "vue"
+    ],
+    "files.associations": {
+        ".stylelintrc": "json"
+    },
+    "files.trimTrailingWhitespace": true,
+    "vsicons.projectDetection.autoReload": true,
+    "workbench.iconTheme": "vscode-icons",
+    "css.validate": false,
+    "scss.validate": false,
+    "vetur.validation.style": false,
+    "stylelint.enable": true
+}

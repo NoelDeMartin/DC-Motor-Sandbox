@@ -1,45 +1,52 @@
 <template>
-    <div class="flex justify-center items-center pt-6">
+    <div class="motor-parameter flex justify-center items-center pt-6">
 
         <span class="w-32 mr-2">{{ name }}</span>
 
-        <svg
-            class="w-4 h-4 cursor-pointer mr-2"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            @click="$emit(locked ? 'unlock' : 'lock')"
-        >
-            <path
-                v-if="locked"
-                class="opacity-25"
-                d="M4
-                    8V6a6 6 0 1 1 12 0v2h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2
-                    2H3a2 2 0 0 1-2-2v-8c0-1.1.9-2 2-2h1zm5
-                    6.73V17h2v-2.27a2 2 0 1 0-2 0zM7
-                    6v2h6V6a3 3 0 0 0-6 0z
-                "
-            />
-            <path
-                v-else
-                d="M4
-                    8V6a6 6 0 1 1 12 0h-3v2h4a2 2 0 0 1 2 2v8a2 2 0 0 1-2
-                    2H3a2 2 0 0 1-2-2v-8c0-1.1.9-2 2-2h1zm5
-                    6.73V17h2v-2.27a2 2 0 1 0-2 0zM7
-                    6v2h6V6a3 3 0 0 0-6 0z
-                "
-            />
-        </svg>
+        <div class="relative mr-2">
+            <svg
+                class="absolute pin cursor-pointer"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                @click="$emit(locked ? 'unlock' : 'lock')"
+            >
+                <path
+                    v-if="locked"
+                    class="opacity-25"
+                    d="M4
+                        8V6a6 6 0 1 1 12 0v2h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2
+                        2H3a2 2 0 0 1-2-2v-8c0-1.1.9-2 2-2h1zm5
+                        6.73V17h2v-2.27a2 2 0 1 0-2 0zM7
+                        6v2h6V6a3 3 0 0 0-6 0z
+                    "
+                />
+                <path
+                    v-else
+                    d="M4
+                        8V6a6 6 0 1 1 12 0h-3v2h4a2 2 0 0 1 2 2v8a2 2 0 0 1-2
+                        2H3a2 2 0 0 1-2-2v-8c0-1.1.9-2 2-2h1zm5
+                        6.73V17h2v-2.27a2 2 0 1 0-2 0zM7
+                        6v2h6V6a3 3 0 0 0-6 0z
+                    "
+                />
+            </svg>
+            <input
+                :checked="locked"
+                class="relative opacity-0 cursor-pointer"
+                type="checkbox"
+                @input="e => $emit(e.target.checked ? 'lock' : 'unlock')"
+            >
+        </div>
 
-        <input
-            :class="{'opacity-25': locked}"
+        <RangeSlider
+            :class="{'opacity-25': locked, 'cursor-pointer': !locked}"
             :disabled="locked"
             :value="value || 0"
             :min="min"
             :max="max"
-            class="mr-2"
-            type="range"
-            @input="e => $emit('input', parseInt(e.target.value))"
-        >
+            class="mr-2 w-64"
+            @input="value => $emit('input', parseInt(value))"
+        />
 
         <input
             :disabled="locked"
@@ -54,7 +61,12 @@
 </template>
 
 <script>
+import RangeSlider from 'vue-range-slider';
+
 export default {
+    components: {
+        RangeSlider,
+    },
     props: {
         name: {
             type: String,
@@ -88,3 +100,17 @@ export default {
     },
 };
 </script>
+
+<style lang="scss">
+
+    $rail-height: config('height.1');
+    $knob-size: config('height.4');
+    $rail-color: config('colors.grey');
+    $rail-fill-color: config('colors.black');
+    $knob-color: config('colors.black');
+    $knob-border: none;
+    $knob-shadow: none;
+
+    @import '~vue-range-slider/dist/vue-range-slider.scss';
+
+</style>
