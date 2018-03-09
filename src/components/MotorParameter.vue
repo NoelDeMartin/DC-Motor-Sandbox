@@ -1,12 +1,13 @@
 <template>
-    <div class="motor-parameter flex flex-col justify-center items-center pt-6 md:flex-row">
+    <div class="motor-parameter flex flex-col justify-center items-center md:flex-row">
 
         <label class="text-xl text-center w-full mr-2 mb-2 md:text-base md:text-left md:w-32 md:mb-0">
-            {{ name }}
+            {{ label }}
         </label>
 
         <div class="flex justify-center items-center flex-grow w-full md:w-auto">
             <svg
+                :class="{'invisible': locked === undefined}"
                 class="cursor-pointer w-5 h-5 mr-1 md:mr-2 md:w-6 md:h-6"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
@@ -65,7 +66,7 @@ export default {
         RangeSlider,
     },
     props: {
-        name: {
+        label: {
             type: String,
             required: true,
         },
@@ -92,7 +93,7 @@ export default {
 
         locked: {
             type: Boolean,
-            required: true,
+            default: undefined,
         },
     },
 };
