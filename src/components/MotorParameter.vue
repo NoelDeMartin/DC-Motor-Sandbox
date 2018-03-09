@@ -103,8 +103,9 @@ export default {
 
 <style lang="scss">
 
+    $slider-width: config('width.64');
     $rail-height: config('height.1');
-    $knob-size: config('height.4');
+    $knob-size: 1rem; // This should be "config('height.4');", but it is not possible to do sass operations with postcss variables
     $rail-color: config('colors.grey');
     $rail-fill-color: config('colors.black');
     $knob-color: config('colors.black');
