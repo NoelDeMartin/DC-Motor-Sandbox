@@ -1,11 +1,13 @@
 <template>
-    <div class="motor-parameter flex justify-center items-center pt-6">
+    <div class="motor-parameter flex flex-col justify-center items-center pt-6 md:flex-row">
 
-        <span class="w-32 mr-2">{{ name }}</span>
+        <label class="text-xl text-center w-full mr-2 mb-2 md:text-base md:text-left md:w-32 md:mb-0">
+            {{ name }}
+        </label>
 
-        <div class="relative mr-2">
+        <div class="flex justify-center items-center flex-grow w-full md:w-auto">
             <svg
-                class="absolute pin cursor-pointer"
+                class="cursor-pointer w-5 h-5 mr-1 md:mr-2 md:w-6 md:h-6"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
                 @click="$emit(locked ? 'unlock' : 'lock')"
@@ -30,33 +32,28 @@
                     "
                 />
             </svg>
+
+            <RangeSlider
+                :class="{'opacity-25': locked, 'cursor-pointer': !locked}"
+                :disabled="locked"
+                :value="value || 0"
+                :min="min"
+                :max="max"
+                class="flex-grow mr-1 md:mr-2"
+                @input="value => $emit('input', value)"
+            />
+
             <input
-                :checked="locked"
-                class="relative opacity-0 cursor-pointer"
-                type="checkbox"
-                @input="e => $emit(e.target.checked ? 'lock' : 'unlock')"
+                :disabled="locked"
+                :value="value ? Math.round(value * 100) / 100 : 0"
+                class="w-8 text-right mr-2 md:w-16"
+                type="number"
+                step="any"
+                @input="e => e.target.value === '' || $emit('input', parseFloat(e.target.value))"
+                @blur="e => e.target.value = value"
             >
+            <span class="w-6 md:w-8">{{ units }}</span>
         </div>
-
-        <RangeSlider
-            :class="{'opacity-25': locked, 'cursor-pointer': !locked}"
-            :disabled="locked"
-            :value="value || 0"
-            :min="min"
-            :max="max"
-            class="mr-2 w-64"
-            @input="value => $emit('input', parseInt(value))"
-        />
-
-        <input
-            :disabled="locked"
-            :value="value ? Math.round(value * 100) / 100 : 0"
-            class="w-16 text-right mr-2"
-            type="float"
-            @input="e => $emit('input', e.target.value? parseFloat(e.target.value) : 0)"
-        >
-        <span class="w-8">{{ units }}</span>
-
     </div>
 </template>
 
@@ -103,7 +100,6 @@ export default {
 
 <style lang="scss">
 
-    $slider-width: config('width.64');
     $rail-height: config('height.1');
     $knob-size: 1rem; // This should be "config('height.4');", but it is not possible to do sass operations with postcss variables
     $rail-color: config('colors.grey');
@@ -113,5 +109,25 @@ export default {
     $knob-shadow: none;
 
     @import '~vue-range-slider/dist/vue-range-slider.scss';
+
+    .motor-parameter {
+
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+
+        svg {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+    }
 
 </style>

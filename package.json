@@ -2,10 +2,11 @@
   "name": "dc-motor-sandbox",
   "description": "Calculate DC Motor specifications",
   "scripts": {
+    "serve": "serve",
     "prod": "NODE_ENV=production webpack --mode=production --config webpack.config.js",
     "publish": "bin/publish",
     "dev": "webpack --mode='development' --config webpack.config.js",
-    "watch": "webpack --mode='development' --config webpack.config.js --watch"
+    "watch": "serve & webpack --mode='development' --config webpack.config.js --watch"
   },
   "devDependencies": {
     "autoprefixer": "^8.0.0",
@@ -26,6 +27,7 @@
     "node-sass": "^4.7.2",
     "postcss-loader": "^2.1.1",
     "sass-loader": "^6.0.6",
+    "serve": "^6.5.2",
     "style-loader": "^0.20.2",
     "stylelint-config-recommended": "^2.1.0",
     "tailwindcss": "^0.4.2",
