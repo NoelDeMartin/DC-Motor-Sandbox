@@ -90,8 +90,8 @@
             </p>
 
             <p class="text-right">
-                <span class="inline-block m-w-8 md:m-w-16">{{ rounded(torque * 10197.162129779) }}</span>
-                <span class="inline-block m-w-6 md:m-w-8">g•cm</span>
+                <span class="inline-block m-w-8 md:m-w-16">{{ rounded(torque * 10.197162129779) }}</span>
+                <span class="inline-block m-w-6 md:m-w-8">Kg•cm</span>
             </p>
 
             <p class="text-right pt-6">
@@ -120,6 +120,12 @@
             />
 
             <p class="text-right pt-6">
+                <label>Speed / Acceleration:</label>
+                <span class="inline-block m-w-8 md:m-w-16">{{ rounded(speed) }}</span>
+                <span class="inline-block m-w-6 md:m-w-8">m/s</span>
+            </p>
+
+            <p class="text-right pt-2">
                 <label>Force (per wheel):</label>
                 <span class="inline-block m-w-8 md:m-w-16">{{ rounded(force) }}</span>
                 <span class="inline-block m-w-6 md:m-w-8">N</span>
@@ -184,14 +190,15 @@ export default {
         force() {
             return this.torque / (this.wheelsRadius / 1000); // Newtons
         },
-        acceleration() {
+        speed() {
             return (this.rotationalSpeed / 60) * TWO_PI * (this.wheelsRadius / 1000); // Meters per seconds squared
         },
         mass() {
             const totalForce = this.force * this.wheelsCount;
+            const acceleration = this.speed;
 
             // Newton's second Law
-            return totalForce / this.acceleration; // Kilograms
+            return totalForce / acceleration; // Kilograms
         },
     },
 
