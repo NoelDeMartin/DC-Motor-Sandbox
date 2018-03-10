@@ -86,13 +86,22 @@
             <p class="text-right pt-6">
                 <label>Torque:</label>
                 <span class="inline-block m-w-8 md:m-w-16">{{ rounded(torque) }}</span>
-                <span class="inline-block m-w-6 md:m-w-8">N•m</span>
+                <span class="inline-block m-w-6 md:m-w-8">mN•m</span>
             </p>
 
             <p class="text-right">
                 <span class="inline-block m-w-8 md:m-w-16">{{ rounded(torque * 10.197162129779) }}</span>
-                <span class="inline-block m-w-6 md:m-w-8">Kg•cm</span>
+                <span class="inline-block m-w-6 md:m-w-8">g•cm</span>
             </p>
+
+            <MotorParameter
+                v-model="reduction"
+                :min="1"
+                :max="50"
+                class="pt-6"
+                label="Reduction"
+                units="x"
+            />
 
             <p class="text-right pt-6">
                 <label>Wheels count:</label>
@@ -128,7 +137,7 @@
             <p class="text-right pt-2">
                 <label>Force (per wheel):</label>
                 <span class="inline-block m-w-8 md:m-w-16">{{ rounded(force) }}</span>
-                <span class="inline-block m-w-6 md:m-w-8">N</span>
+                <span class="inline-block m-w-6 md:m-w-8">mN</span>
             </p>
 
             <p class="text-right pt-2">
@@ -151,6 +160,7 @@ const INITIAL = {
     current: 100,
     efficiency: 80,
     rotationalSpeed: 8500,
+    reduction: 1,
     wheelsCount: 2,
     wheelsRadius: 100,
 };
@@ -172,6 +182,7 @@ export default {
             efficiency: INITIAL.efficiency, // Percentage
             rotationalSpeed: INITIAL.rotationalSpeed, // Revolutions per minute
             angularSpeed: INITIAL.rotationalSpeed * SPEED_CONVERSION, // Radians per second
+            reduction: INITIAL.reduction,
             wheelsCount: INITIAL.wheelsCount,
             wheelsRadius: INITIAL.wheelsRadius, // Milimeters
         };
@@ -179,22 +190,22 @@ export default {
 
     computed: {
         inputPower() {
-            return this.voltage * this.current; // Watts
+            return this.voltage * (this.current / 1000); // Watts
         },
         outputPower() {
             return this.inputPower * (this.efficiency / 100); // Watts
         },
         torque() {
-            return this.outputPower / this.angularSpeed; // Newton-meters
+            return this.outputPower * 1000 / this.angularSpeed; // micro Newton-meters
         },
         force() {
-            return this.torque / (this.wheelsRadius / 1000); // Newtons
+            return this.torque * 1000 / this.wheelsRadius; // micro Newtons
         },
         speed() {
-            return (this.rotationalSpeed / 60) * TWO_PI * (this.wheelsRadius / 1000); // Meters per seconds squared
+            return (this.rotationalSpeed / (this.reduction * 60)) * TWO_PI * (this.wheelsRadius / 1000); // Meters per seconds squared
         },
         mass() {
-            const totalForce = this.force * this.wheelsCount;
+            const totalForce = (this.force / 1000) * this.wheelsCount; // Newtons
             const acceleration = this.speed;
 
             // Newton's second Law
