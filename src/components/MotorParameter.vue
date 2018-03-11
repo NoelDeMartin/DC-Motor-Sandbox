@@ -7,7 +7,7 @@
 
         <div class="flex justify-center items-center flex-grow w-full md:w-auto">
             <svg
-                :class="{'invisible': locked === undefined}"
+                v-if="locked !== undefined"
                 class="cursor-pointer w-5 h-5 mr-1 md:mr-2 md:w-6 md:h-6 no-highlight"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
@@ -40,7 +40,7 @@
                 :value="value || 0"
                 :min="min"
                 :max="max"
-                class="flex-grow mr-1 md:mr-2"
+                class="flex-grow mr-2 md:mr-3"
                 @input="value => $emit('input', value)"
             />
 
@@ -110,6 +110,10 @@ export default {
     $knob-shadow: none;
 
     @import '~vue-range-slider/dist/vue-range-slider.scss';
+
+    .range-slider {
+        padding: 0 !important;
+    }
 
     .motor-parameter {
 
