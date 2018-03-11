@@ -1,5 +1,8 @@
 <template>
-    <label class="switch">
+    <label
+        class="switch no-highlight"
+        @click="$emit('input', !value)"
+    >
         <input
             :checked="value"
             type="checkbox"
