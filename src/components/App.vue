@@ -9,7 +9,10 @@
         <div class="flex justify-center flex-col max-w-xl m-auto">
 
             <h2 class="flex text-center text-xl mt-4">
-                <AppSwitch class="invisible" />
+                <AppSwitch
+                    :value="false"
+                    class="invisible"
+                />
                 <span class="flex-grow">Motor</span>
                 <AppSwitch v-model="motor" />
             </h2>
@@ -109,7 +112,10 @@
             </table>
 
             <h2 class="flex text-center text-xl mt-4">
-                <AppSwitch class="invisible" />
+                <AppSwitch
+                    :value="false"
+                    class="invisible"
+                />
                 <span class="flex-grow">Gearbox</span>
                 <AppSwitch v-model="gearbox" />
             </h2>
@@ -139,7 +145,7 @@
                         Rotational Speed
                     </th>
                     <td class="border-b border-grey-light p-2">
-                        {{ rounded(rotationalSpeed / reduction) }} RPM
+                        {{ rounded(reducedRotationalSpeed) }} RPM
                     </td>
                 </tr>
 
@@ -148,7 +154,7 @@
                         Angular Speed
                     </th>
                     <td class="border-b border-grey-light p-2">
-                        {{ rounded(angularSpeed / reduction) }} rad/s
+                        {{ rounded(reducedAngularSpeed) }} rad/s
                     </td>
                 </tr>
 
@@ -157,14 +163,17 @@
                         Torque
                     </th>
                     <td class="p-2">
-                        {{ rounded(torque * reduction) }} mN•m
+                        {{ rounded(augmentedTorque) }} mN•m
                     </td>
                 </tr>
 
             </table>
 
             <h2 class="flex text-center text-xl mt-4">
-                <AppSwitch class="invisible" />
+                <AppSwitch
+                    :value="false"
+                    class="invisible"
+                />
                 <span class="flex-grow">Wheels</span>
                 <AppSwitch v-model="wheels" />
             </h2>
@@ -211,16 +220,7 @@
                         Speed
                     </th>
                     <td class="border-b border-grey-light p-2">
-                        {{ rounded(speed) }} m/s
-                    </td>
-                </tr>
-
-                <tr>
-                    <th class="border-b border-r border-grey-light p-2">
-                        Acceleration
-                    </th>
-                    <td class="border-b border-grey-light p-2">
-                        {{ rounded(acceleration) }} m/s²
+                        {{ rounded(wheelsSpeed) }} m/s
                     </td>
                 </tr>
 
@@ -229,7 +229,7 @@
                         Force
                     </th>
                     <td class="border-b border-grey-light p-2">
-                        {{ rounded(force) }} mN/wheel
+                        {{ rounded(wheelsForce) }} N/wheel
                     </td>
                 </tr>
 
@@ -303,20 +303,27 @@ export default {
         torque() {
             return this.outputPower * 1000 / this.angularSpeed; // micro Newton-meters
         },
-        force() {
-            return this.torque * 1000 / this.wheelsRadius; // micro Newtons
+        reducedRotationalSpeed() {
+            return this.rotationalSpeed / this.reduction; // Revolutions per minute
         },
-        speed() {
+        reducedAngularSpeed() {
+            return this.angularSpeed / this.reduction; // Radians per second
+        },
+        augmentedTorque() {
+            return this.torque * this.reduction; // micro Newton-meters
+        },
+        wheelsForce() {
+            return (this.augmentedTorque / 1000) / (this.wheelsRadius / 1000); // Newtons
+        },
+        wheelsSpeed() {
             return (this.rotationalSpeed / (this.reduction * 60)) * TWO_PI * (this.wheelsRadius / 1000); // Meters per seconds squared
         },
-        acceleration() {
-            return this.speed;
-        },
         mass() {
-            const totalForce = (this.force / 1000) * this.wheelsCount; // Newtons
+            const totalForce = this.wheelsForce * this.wheelsCount; // Newtons
+            const wheelsAcceleration = this.wheelsSpeed;
 
             // Newton's second Law
-            return totalForce / this.acceleration; // Kilograms
+            return totalForce / wheelsAcceleration; // Kilograms
         },
     },
 
