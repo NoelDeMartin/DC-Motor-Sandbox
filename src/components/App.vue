@@ -58,21 +58,21 @@
                 />
 
                 <MotorParameter
-                    v-model="efficiency"
+                    v-model="rotationalSpeed"
+                    :min="9"
+                    :max="20000"
+                    class="pt-6"
+                    label="Speed"
+                    units="RPM"
+                />
+
+                <MotorParameter
+                    v-model="motorEfficiency"
                     :min="1"
                     :max="100"
                     class="pt-6"
                     label="Efficiency"
                     units="%"
-                />
-
-                <MotorParameter
-                    v-model="rotationalSpeed"
-                    :min="9"
-                    :max="20000"
-                    class="pt-6"
-                    label="Rotational Speed"
-                    units="RPM"
                 />
 
             </div>
@@ -84,7 +84,7 @@
 
                 <tr>
                     <th class="border-b border-r border-grey-light p-2">
-                        Output mechanical power
+                        Output power
                     </th>
                     <td class="border-b border-grey-light p-2">
                         {{ rounded(outputPower) }} watts
@@ -93,10 +93,10 @@
 
                 <tr>
                     <th class="border-b border-r border-grey-light p-2">
-                        Angular Speed
+                        Speed
                     </th>
                     <td class="border-b border-grey-light p-2">
-                        {{ rounded(angularSpeed) }} rad/s
+                        {{ rounded(rotationalSpeed) }} RPM | {{ rounded(angularSpeed) }} rad/s
                     </td>
                 </tr>
 
@@ -105,7 +105,7 @@
                         Torque
                     </th>
                     <td class="p-2">
-                        {{ rounded(torque) }} mN•m
+                        {{ rounded(torque) }} mN•m | {{ rounded(torque * TORQUE_CONVERSION) }} Kg•cm
                     </td>
                 </tr>
 
@@ -133,6 +133,15 @@
                     units="x"
                 />
 
+                <MotorParameter
+                    v-model="gearboxEfficiency"
+                    :min="1"
+                    :max="100"
+                    class="pt-6"
+                    label="Efficiency"
+                    units="%"
+                />
+
             </div>
 
             <table
@@ -142,19 +151,10 @@
 
                 <tr>
                     <th class="border-b border-r border-grey-light p-2">
-                        Rotational Speed
+                        Speed
                     </th>
                     <td class="border-b border-grey-light p-2">
-                        {{ rounded(reducedRotationalSpeed) }} RPM
-                    </td>
-                </tr>
-
-                <tr>
-                    <th class="border-b border-r border-grey-light p-2">
-                        Angular Speed
-                    </th>
-                    <td class="border-b border-grey-light p-2">
-                        {{ rounded(reducedAngularSpeed) }} rad/s
+                        {{ rounded(reducedRotationalSpeed) }} RPM | {{ rounded(reducedAngularSpeed) }} rad/s
                     </td>
                 </tr>
 
@@ -163,7 +163,7 @@
                         Torque
                     </th>
                     <td class="p-2">
-                        {{ rounded(augmentedTorque) }} mN•m
+                        {{ rounded(augmentedTorque) }} mN•m | {{ rounded(augmentedTorque * TORQUE_CONVERSION) }} Kg•cm
                     </td>
                 </tr>
 
@@ -184,7 +184,7 @@
             >
 
                 <p class="text-right ">
-                    <label>Wheels count:</label>
+                    <label>Count:</label>
                     <select
                         v-model="wheelsCount"
                         class="w-14 md:w-24"
@@ -204,7 +204,7 @@
                     :min="1"
                     :max="1000"
                     class="pt-6"
-                    label="Wheels radius"
+                    label="Radius"
                     units="mm"
                 />
 
@@ -238,7 +238,12 @@
                         Maximum load
                     </th>
                     <td class="p-2">
-                        {{ rounded(mass) }} Kg
+                        <template v-if="mass < 1">
+                            {{ rounded(mass * 1000) }} g
+                        </template>
+                        <template v-else>
+                            {{ rounded(mass) }} Kg
+                        </template>
                     </td>
                 </tr>
 
@@ -257,15 +262,17 @@ import MotorParameter from './MotorParameter.vue';
 const INITIAL = {
     voltage: 6,
     current: 100,
-    efficiency: 80,
     rotationalSpeed: 8500,
+    motorEfficiency: 80,
     reduction: 1,
+    gearboxEfficiency: 100,
     wheelsCount: 2,
     wheelsRadius: 100,
 };
 
 const TWO_PI = 2 * Math.PI;
 const SPEED_CONVERSION = TWO_PI / 60;
+const TORQUE_CONVERSION = 10.197162129779;
 
 export default {
     components: {
@@ -280,10 +287,11 @@ export default {
             voltage: INITIAL.voltage, // Volts
             current: INITIAL.current, // Micro Amperes
             resistance: INITIAL.voltage / (INITIAL.current / 1000), // Ohms
-            efficiency: INITIAL.efficiency, // Percentage
             rotationalSpeed: INITIAL.rotationalSpeed, // Revolutions per minute
+            motorEfficiency: INITIAL.motorEfficiency, // Percentage
             gearbox: false,
             reduction: INITIAL.reduction,
+            gearboxEfficiency: INITIAL.gearboxEfficiency,
             wheels: false,
             wheelsCount: INITIAL.wheelsCount,
             wheelsRadius: INITIAL.wheelsRadius, // Milimeters
@@ -291,11 +299,12 @@ export default {
     },
 
     computed: {
+        TORQUE_CONVERSION: () => TORQUE_CONVERSION,
         inputPower() {
             return this.voltage * (this.current / 1000); // Watts
         },
         outputPower() {
-            return this.inputPower * (this.efficiency / 100); // Watts
+            return this.inputPower * (this.motorEfficiency / 100); // Watts
         },
         angularSpeed() {
             return this.rotationalSpeed * SPEED_CONVERSION; // Radians per second
@@ -310,7 +319,7 @@ export default {
             return this.angularSpeed / this.reduction; // Radians per second
         },
         augmentedTorque() {
-            return this.torque * this.reduction; // micro Newton-meters
+            return this.torque * this.reduction * (this.gearboxEfficiency / 100); // micro Newton-meters
         },
         wheelsForce() {
             return (this.augmentedTorque / 1000) / (this.wheelsRadius / 1000); // Newtons
