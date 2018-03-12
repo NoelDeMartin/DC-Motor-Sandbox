@@ -9,6 +9,8 @@ npm run prod
 rm -rf $TMP_DIR
 mkdir $TMP_DIR
 cp index.html $TMP_DIR
+cp manifest.json $TMP_DIR
+cp icons $TMP_DIR -r
 cp build $TMP_DIR -r
 
 cd $TMP_DIR
