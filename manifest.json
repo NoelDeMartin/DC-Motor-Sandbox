@@ -4,17 +4,17 @@
     "name": "DC Motor Sandbox",
     "icons": [
         {
-            "src": "/icons/icon_32.png",
+            "src": "icons/icon_32.png",
             "sizes": "32x32",
             "type": "image/png"
         },
         {
-            "src": "/icons/icon_64.png",
+            "src": "icons/icon_64.png",
             "sizes": "64x64",
             "type": "image/png"
         },
         {
-            "src": "/icons/icon_256.png",
+            "src": "icons/icon_256.png",
             "sizes": "256x256",
             "type": "image/png"
         }
@@ -24,7 +24,7 @@
     "description": "Calculate DC Motor specifications",
     "theme_color": "#b8c2cc",
     "background_color": "#b8c2cc",
-    "start_url": "/",
+    "start_url": "/DC-Motor-Sandbox/",
     "display": "fullscreen",
     "orientation": "portrait"
 }
